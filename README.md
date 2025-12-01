@@ -509,8 +509,8 @@ Technical Excellence
 
 📞 Support & Contact
 
-· Project Lead: Your Name
-· Email: your.email@example.com
+· Project Lead: YUVRAJ KUMAR
+· Email: yuvrajkumar22032006@gmail.com
 · Course: Google Agents Intensive (Nov 10-14, 2025)
 · Submission Deadline: Dec 1, 2025
 
