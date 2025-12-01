@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Project Workflow Manager | AI-Powered Personal Project Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --background: #ffffff;
+            --background-alt: #f8fafc;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--background);
+            padding-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Section Styling */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #6d28d9;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #0d9669;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Session Info */
+        .session-info {
+            background: var(--primary-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .session-info.active {
+            display: block;
+        }
+
+        /* Plan Viewer */
+        .week-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .week-header {
+            background: var(--background-alt);
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .week-header:hover {
+            background: #f1f5f9;
+        }
+
+        .week-content {
+            padding: 1rem;
+            display: none;
+            border-top: 1px solid var(--border);
+        }
+
+        .week-content.active {
+            display: block;
+        }
+
+        .day-tasks {
+            margin-bottom: 1rem;
+        }
+
+        .day-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .task {
+            background: var(--background-alt);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .task.high-priority {
+            border-left-color: var(--error);
+        }
+
+        .task.medium-priority {
+            border-left-color: var(--warning);
+        }
+
+        .task.low-priority {
+            border-left-color: var(--success);
+        }
+
+        .task-duration {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        /* Progress Section */
+        .progress-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-input input {
+            flex: 1;
+        }
+
+        /* Motivation Panel */
+        .motivation-panel {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-style: italic;
+            border-left: 4px solid var(--accent);
+        }
+
+        /* Resources Results */
+        .resource-result {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .resource-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Evaluation Results */
+        .evaluation-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric-card {
+            background: var(--background-alt);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Observability Dashboard */
+        .observability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .observability-card {
+            background: var(--background-alt);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .trace-log {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        /* JSON Viewer */
+        .json-viewer {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .json-viewer.active {
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .progress-input {
+                flex-direction: column;
+            }
+            
+            .evaluation-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 🟦 1. Header Section -->
+    <div class="header">
+        <div class="container">
+            <h1>Smart Project Workflow Manager</h1>
+            <p>AI-powered Personal Project Planner (Multi-Agent System)</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 🟩 2. User Setup Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-user-plus"></i>
+                <h2>Create Session</h2>
+            </div>
+            <div class="form-group">
+                <label for="user-id">User Name or ID</label>
+                <input type="text" id="user-id" placeholder="Enter your name or unique ID">
+            </div>
+            <button class="btn" id="create-session-btn">
+                <i class="fas fa-plus-circle"></i> Create Session
+            </button>
+            <div class="session-info" id="session-info">
+                <p><strong>Session ID:</strong> <span id="session-id-display"></span></p>
+                <p>Use this session ID for all subsequent operations.</p>
+            </div>
+        </div>
+
+        <!-- 🟧 3. Profile Input Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-clipboard-list"></i>
+                <h2>Create Your Project Plan</h2>
+            </div>
+            <div class="form-group">
+                <label for="project-name">Project Name</label>
+                <input type="text" id="project-name" placeholder="e.g., Learn Python for Data Science">
+            </div>
+            <div class="form-group">
+                <label for="duration">Duration (weeks)</label>
+                <input type="number" id="duration" min="1" max="12" value="4">
+            </div>
+            <div class="form-group">
+                <label for="daily-hours">Daily Study/Work Hours</label>
+                <input type="number" id="daily-hours" min="1" max="8" value="2" step="0.5">
+            </div>
+            <div class="form-group">
+                <label for="skill-level">Skill Level</label>
+                <select id="skill-level">
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+            <button class="btn" id="create-plan-btn">
+                <i class="fas fa-magic"></i> Create AI-Powered Plan
+            </button>
+        </div>
+
+        <!-- 🟥 4. Plan Viewer Section -->
+        <div class="section" id="plan-viewer" style="display: none;">
+            <div class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                <h2>Your Personalized Project Plan</h2>
+            </div>
+            <div id="week-cards-container">
+                <!-- Plan will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- 🟨 5. Progress Recorder Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-tasks"></i>
+                <h2>Record Your Progress</h2>
+            </div>
+            <div class="form-group">
+                <label for="completed-tasks">Completed Tasks (comma-separated)</label>
+                <div class="progress-input">
+                    <input type="text" id="completed-tasks" placeholder="e.g., Python basics, Data types, Functions">
+                    <button class="btn btn-success" id="record-progress-btn">
+                        <i class="fas fa-check-circle"></i> Record
+                    </button>
+                </div>
+            </div>
+            <div id="progress-message" style="display: none; color: var(--success); font-weight: 500;">
+                <i class="fas fa-check"></i> Progress saved successfully!
+            </div>
+        </div>
+
+        <!-- 🟪 6. Motivation Panel -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-heart"></i>
+                <h2>Motivation & Encouragement</h2>
+            </div>
+            <div class="motivation-panel" id="motivation-panel">
+                Click "Get Motivation" to receive personalized encouragement from our AI Motivation Agent!
+            </div>
+            <button class="btn btn-secondary" id="get-motivation-btn" style="margin-top: 1rem;">
+                <i class="fas fa-bolt"></i> Get Motivation
+            </button>
+        </div>
+
+        <!-- 🟫 7. Resources Search Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-search"></i>
+                <h2>Find Learning Resources</h2>
+            </div>
+            <div class="form-group">
+                <label for="resource-query">Search for learning materials</label>
+                <div class="progress-input">
+                    <input type="text" id="resource-query" placeholder="e.g., Python pandas tutorial">
+                    <button class="btn" id="search-resources-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+            <div id="resources-results">
+                <!-- Resources will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- ⬛ 8. Adjust Plan Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-sync-alt"></i>
+                <h2>Auto-Adjust Plan</h2>
+            </div>
+            <p style="margin-bottom: 1rem;">Let our AI Optimizer Agent adjust your plan based on your progress.</p>
+            <button class="btn btn-warning" id="adjust-plan-btn">
+                <i class="fas fa-cogs"></i> Auto-Adjust Plan
+            </button>
+        </div>
+
+        <!-- 🟦 9. Evaluation Section -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-chart-line"></i>
+                <h2>Plan Evaluation</h2>
+            </div>
+            <p style="margin-bottom: 1rem;">Get a comprehensive evaluation of your progress and plan effectiveness.</p>
+            <button class="btn" id="evaluate-plan-btn">
+                <i class="fas fa-analytics"></i> Evaluate Plan
+            </button>
+            <div id="evaluation-results" style="display: none; margin-top: 1rem;">
+                <!-- Evaluation results will be inserted here -->
+            </div>
+        </div>
+
+        <!-- 🟫 10. Observability Dashboard -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                <h2>System Observability Dashboard</h2>
+            </div>
+            <p style="margin-bottom: 1rem;">Monitor the performance of our multi-agent system in real-time.</p>
+            <button class="btn" id="view-observability-btn">
+                <i class="fas fa-tachometer-alt"></i> View Observability
+            </button>
+            <div id="observability-dashboard" style="display: none; margin-top: 1rem;">
+                <!-- Observability data will be inserted here -->
+            </div>
+        </div>
+
+        <!-- 🟩 11. JSON Viewer Panel -->
+        <div class="section">
+            <div class="section-title">
+                <i class="fas fa-code"></i>
+                <h2>API Response Viewer</h2>
+            </div>
+            <p style="margin-bottom: 1rem;">View the raw JSON responses from our multi-agent system.</p>
+            <button class="btn" id="toggle-json-viewer-btn">
+                <i class="fas fa-eye"></i> Toggle JSON Viewer
+            </button>
+            <div class="json-viewer" id="json-viewer">
+                <!-- JSON responses will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟦 12. Footer -->
+    <div class="footer">
+        <div class="container">
+            <p>Made by Yuvraj Kumar — Kaggle Agents Capstone Project 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for API - adjust based on your deployment
+        const API_BASE_URL = 'http://localhost:8000';
+        let currentSessionId = null;
+        let currentPlan = null;
+
+        // Error handling function
+        function showError(message, error = null) {
+            console.error(message, error);
+            
+            // Create error notification
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--error);
+                color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                max-width: 300px;
+            `;
+            
+            errorDiv.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 0.5rem;">Error</div>
+                <div>${message}</div>
+                ${error ? `<div style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.8;">${error}</div>` : ''}
+            `;
+            
+            document.body.appendChild(errorDiv);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                errorDiv.style.opacity = '0';
+                errorDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => document.body.removeChild(errorDiv), 500);
+            }, 5000);
+        }
+
+        // Connection test
+        async function testBackendConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Backend connection successful');
+                    return true;
+                }
+            } catch (error) {
+                console.warn('⚠️ Backend not reachable, using mock mode');
+                
+                // Show warning
+                const warningDiv = document.createElement('div');
+                warningDiv.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    background: var(--warning);
+                    color: var(--text);
+                    padding: 1rem;
+                    border-radius: 8px;
+                    box-shadow: var(--shadow-lg);
+                    z-index: 1000;
+                    max-width: 300px;
+                `;
+                
+                warningDiv.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">⚠️ Demo Mode</div>
+                    <div>Backend not connected. Using mock data for demonstration.</div>
+                `;
+                
+                document.body.appendChild(warningDiv);
+                
+                setTimeout(() => {
+                    warningDiv.style.opacity = '0';
+                    warningDiv.style.transition = 'opacity 0.5s';
+                    setTimeout(() => document.body.removeChild(warningDiv), 500);
+                }, 10000);
+            }
+            return false;
+        }
+
+        // 🟩 2. Create Session
+        document.getElementById('create-session-btn').addEventListener('click', async () => {
+            const userId = document.getElementById('user-id').value;
+            if (!userId) {
+                showError('Please enter a user name or ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/create_session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentSessionId = data.session_id;
+                
+                document.getElementById('session-id-display').textContent = currentSessionId;
+                document.getElementById('session-info').classList.add('active');
+                
+                addToJsonViewer('Create Session', data);
+                
+            } catch (error) {
+                showError('Error creating session. Please check if the server is running.', error.message);
+            }
+        });
+
+        // 🟧 3. Create Plan
+        document.getElementById('create-plan-btn').addEventListener('click', async () => {
+            if (!currentSessionId) {
+                showError('Please create a session first');
+                return;
+            }
+
+            const projectName = document.getElementById('project-name').value;
+            const duration = document.getElementById('duration').value;
+            const dailyHours = document.getElementById('daily-hours').value;
+            const skillLevel = document.getElementById('skill-level').value;
+
+            if (!projectName) {
+                showError('Please enter a project name');
+                return;
+            }
+
+            const profile = {
+                goals: projectName,
+                timeline_weeks: parseInt(duration),
+                daily_hours: parseFloat(dailyHours),
+                skill_level: skillLevel,
+                subjects: [projectName.split(' ')[0]]
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/create_plan`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        profile: profile
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                currentPlan = data;
+                
+                displayPlan(data.plan);
+                document.getElementById('plan-viewer').style.display = 'block';
+                
+                addToJsonViewer('Create Plan', data);
+                
+            } catch (error) {
+                showError('Error creating plan. Please try again.', error.message);
+            }
+        });
+
+        // 🟨 5. Record Progress
+        document.getElementById('record-progress-btn').addEventListener('click', async () => {
+            if (!currentSessionId) {
+                showError('Please create a session first');
+                return;
+            }
+
+            const completedTasksInput = document.getElementById('completed-tasks').value;
+            if (!completedTasksInput) {
+                showError('Please enter completed tasks');
+                return;
+            }
+
+            const completedTasks = completedTasksInput.split(',').map(task => ({
+                task: task.trim(),
+                completed: true,
+                duration_minutes: 60
+            }));
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/record_progress`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        completed_tasks: completedTasks
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                document.getElementById('progress-message').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('progress-message').style.display = 'none';
+                }, 3000);
+                
+                document.getElementById('completed-tasks').value = '';
+                
+                addToJsonViewer('Record Progress', data);
+                
+                setTimeout(getMotivation, 500);
+                
+            } catch (error) {
+                showError('Error recording progress. Please try again.', error.message);
+            }
+        });
+
+        // 🟪 6. Get Motivation
+        document.getElementById('get-motivation-btn').addEventListener('click', getMotivation);
+
+        async function getMotivation() {
+            if (!currentSessionId) {
+                showError('Please create a session first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/nudge?session_id=${currentSessionId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('motivation-panel').textContent = data.message || "Keep up the great work! You're making excellent progress.";
+                
+                addToJsonViewer('Get Motivation', data);
+                
+            } catch (error) {
+                console.error('Error getting motivation:', error);
+                document.getElementById('motivation-panel').textContent = "You're doing great! Keep up the consistent work. Remember: progress, not perfection! ✨";
+            }
+        }
+
+        // 🟫 7. Search Resources
+        document.getElementById('search-resources-btn').addEventListener('click', async () => {
+            const query = document.getElementById('resource-query').value;
+            if (!query) {
+                showError('Please enter a search query');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/resources?q=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                displayResources(data.results || []);
+                
+                addToJsonViewer('Search Resources', data);
+                
+            } catch (error) {
+                showError('Error searching resources. Please try again.', error.message);
+            }
+        });
+
+        // ⬛ 8. Adjust Plan
+        document.getElementById('adjust-plan-btn').addEventListener('click', async () => {
+            if (!currentSessionId) {
+                showError('Please create a session first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/adjust`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ session_id: currentSessionId })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.adjusted_plan) {
+                    currentPlan = data.adjusted_plan;
+                    displayPlan(data.adjusted_plan.plan);
+                    
+                    // Show success message
+                    const successDiv = document.createElement('div');
+                    successDiv.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: var(--success);
+                        color: white;
+                        padding: 1rem;
+                        border-radius: 8px;
+                        box-shadow: var(--shadow-lg);
+                        z-index: 1000;
+                        max-width: 300px;
+                    `;
+                    
+                    successDiv.innerHTML = `
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Success!</div>
+                        <div>Plan adjusted successfully based on your progress!</div>
+                    `;
+                    
+                    document.body.appendChild(successDiv);
+                    
+                    setTimeout(() => {
+                        successDiv.style.opacity = '0';
+                        successDiv.style.transition = 'opacity 0.5s';
+                        setTimeout(() => document.body.removeChild(successDiv), 500);
+                    }, 3000);
+                }
+                
+                addToJsonViewer('Adjust Plan', data);
+                
+            } catch (error) {
+                showError('Error adjusting plan. Please try again.', error.message);
+            }
+        });
+
+        // 🟦 9. Evaluate Plan
+        document.getElementById('evaluate-plan-btn').addEventListener('click', async () => {
+            if (!currentSessionId) {
+                showError('Please create a session first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/evaluate?session_id=${currentSessionId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                displayEvaluation(data.evaluation || {});
+                
+                addToJsonViewer('Evaluate Plan', data);
+                
+            } catch (error) {
+                showError('Error evaluating plan. Please try again.', error.message);
+            }
+        });
+
+        // 🟫 10. View Observability
+        document.getElementById('view-observability-btn').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/observability`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                displayObservability(data);
+                
+                addToJsonViewer('Observability', data);
+                
+            } catch (error) {
+                console.error('Error fetching observability:', error);
+                displayObservability(getMockObservabilityData());
+            }
+        });
+
+        // 🟩 11. Toggle JSON Viewer
+        document.getElementById('toggle-json-viewer-btn').addEventListener('click', () => {
+            const viewer = document.getElementById('json-viewer');
+            viewer.classList.toggle('active');
+        });
+
+        // Helper Functions
+        function displayPlan(plan) {
+            const container = document.getElementById('week-cards-container');
+            container.innerHTML = '';
+            
+            if (!plan || !plan.weekly_structure) {
+                container.innerHTML = '<p>No plan data available.</p>';
+                return;
+            }
+            
+            Object.keys(plan.weekly_structure).forEach(weekKey => {
+                const weekData = plan.weekly_structure[weekKey];
+                const weekCard = document.createElement('div');
+                weekCard.className = 'week-card';
+                
+                const weekHeader = document.createElement('div');
+                weekHeader.className = 'week-header';
+                weekHeader.innerHTML = `
+                    ${weekKey.replace('_', ' ').toUpperCase()} 
+                    <i class="fas fa-chevron-down"></i>
+                `;
+                
+                const weekContent = document.createElement('div');
+                weekContent.className = 'week-content';
+                
+                if (Array.isArray(weekData)) {
+                    weekData.forEach(dayData => {
+                        const dayTasks = document.createElement('div');
+                        dayTasks.className = 'day-tasks';
+                        
+                        const dayTitle = document.createElement('div');
+                        dayTitle.className = 'day-title';
+                        dayTitle.textContent = dayData.day || 'Daily Tasks';
+                        
+                        const tasksContainer = document.createElement('div');
+                        
+                        if (dayData.tasks && Array.isArray(dayData.tasks)) {
+                            dayData.tasks.forEach(task => {
+                                const taskEl = document.createElement('div');
+                                taskEl.className = `task ${task.priority || 'medium'}-priority`;
+                                
+                                let taskHtml = `<strong>${task.task}</strong>`;
+                                if (task.duration_minutes) {
+                                    taskHtml += `<div class="task-duration">Duration: ${task.duration_minutes} minutes</div>`;
+                                }
+                                if (task.learning_objective) {
+                                    taskHtml += `<div style="font-size: 0.875rem; margin-top: 0.25rem;">Objective: ${task.learning_objective}</div>`;
+                                }
+                                
+                                taskEl.innerHTML = taskHtml;
+                                tasksContainer.appendChild(taskEl);
+                            });
+                        }
+                        
+                        dayTasks.appendChild(dayTitle);
+                        dayTasks.appendChild(tasksContainer);
+                        weekContent.appendChild(dayTasks);
+                    });
+                }
+                
+                weekHeader.addEventListener('click', () => {
+                    weekContent.classList.toggle('active');
+                    const icon = weekHeader.querySelector('i');
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                });
+                
+                weekCard.appendChild(weekHeader);
+                weekCard.appendChild(weekContent);
+                container.appendChild(weekCard);
+            });
+        }
+
+        function displayResources(resources) {
+            const container = document.getElementById('resources-results');
+            container.innerHTML = '';
+            
+            if (resources.length === 0) {
+                container.innerHTML = '<p>No resources found. Try a different search term.</p>';
+                return;
+            }
+            
+            resources.forEach(resource => {
+                const resourceEl = document.createElement('div');
+                resourceEl.className = 'resource-result';
+                
+                resourceEl.innerHTML = `
+                    <div class="resource-title">${resource.title || 'Untitled Resource'}</div>
+                    <a href="${resource.url || '#'}" class="resource-link" target="_blank">${resource.url || 'No URL available'}</a>
+                    ${resource.snippet ? `<p style="margin-top: 0.5rem; font-size: 0.875rem;">${resource.snippet}</p>` : ''}
+                `;
+                
+                container.appendChild(resourceEl);
+            });
+        }
+
+        function displayEvaluation(evaluation) {
+            const container = document.getElementById('evaluation-results');
+            container.style.display = 'block';
+            container.innerHTML = '';
+            
+            if (!evaluation.overall_score) {
+                container.innerHTML = '<p>No evaluation data available.</p>';
+                return;
+            }
+            
+            let html = `
+                <div class="evaluation-metrics">
+                    <div class="metric-card">
+                        <div class="metric-value">${evaluation.overall_score || 'N/A'}</div>
+                        <div class="metric-label">Overall Score</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${evaluation.grade || 'N/A'}</div>
+                        <div class="metric-label">Grade</div>
+                    </div>
+                </div>
+            `;
+            
+            if (evaluation.metric_scores) {
+                html += '<h3 style="margin: 1rem 0 0.5rem;">Detailed Metrics</h3><div class="evaluation-metrics">';
+                
+                Object.keys(evaluation.metric_scores).forEach(metric => {
+                    html += `
+                        <div class="metric-card">
+                            <div class="metric-value">${evaluation.metric_scores[metric]}</div>
+                            <div class="metric-label">${metric.replace('_', ' ').toUpperCase()}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            }
+            
+            if (evaluation.recommendations && evaluation.recommendations.length > 0) {
+                html += '<h3 style="margin: 1rem 0 0.5rem;">Recommendations</h3><ul style="padding-left: 1.5rem;">';
+                evaluation.recommendations.forEach(rec => {
+                    html += `<li>${rec}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function displayObservability(data) {
+            const container = document.getElementById('observability-dashboard');
+            container.style.display = 'block';
+            container.innerHTML = '';
+            
+            let html = '<div class="observability-grid">';
+            
+            if (data.system_overview) {
+                html += `
+                    <div class="observability-card">
+                        <h3>System Overview</h3>
+                        <p>Uptime: ${data.system_overview.uptime_seconds || 'N/A'}s</p>
+                        <p>Total Calls: ${data.system_overview.total_agent_calls || 'N/A'}</p>
+                        <p>Success Rate: ${data.system_overview.success_rate || 'N/A'}%</p>
+                    </div>
+                `;
+            }
+            
+            if (data.agent_performance) {
+                html += '<div class="observability-card"><h3>Agent Performance</h3>';
+                Object.keys(data.agent_performance).forEach(agent => {
+                    const perf = data.agent_performance[agent];
+                    html += `
+                        <div style="margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+                            <strong>${agent}</strong><br>
+                            Calls: ${perf.call_count || 0} | 
+                            Success: ${perf.success_rate || 0}% | 
+                            Avg Time: ${perf.average_processing_time || 0}s
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            
+            if (data.recent_traces) {
+                html += '<h3 style="margin-top: 1rem;">Recent Traces</h3><div class="trace-log">';
+                data.recent_traces.forEach(trace => {
+                    html += `[${new Date(trace.timestamp * 1000).toLocaleTimeString()}] ${trace.agent_name}: ${trace.status}<br>`;
+                });
+                html += '</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function addToJsonViewer(operation, data) {
+            const viewer = document.getElementById('json-viewer');
+            const entry = document.createElement('div');
+            entry.innerHTML = `
+                <div style="color: var(--accent); margin-bottom: 0.5rem;">${operation}:</div>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+                <hr style="border: none; border-top: 1px solid #374151; margin: 1rem 0;">
+            `;
+            viewer.appendChild(entry);
+            viewer.scrollTop = viewer.scrollHeight;
+        }
+
+        // Mock data for demo purposes
+        function getMockObservabilityData() {
+            return {
+                system_overview: {
+                    uptime_seconds: 86400,
+                    total_agent_calls: 142,
+                    successful_calls: 135,
+                    failed_calls: 7,
+                    success_rate: 95.07,
+                    total_processing_time: 285.42,
+                    average_call_time: 2.01,
+                    calls_per_minute: 0.1,
+                    traces_in_memory: 50,
+                    agents_monitored: 7
+                },
+                agent_performance: {
+                    PlannerAgent: {
+                        call_count: 25,
+                        success_count: 24,
+                        error_count: 1,
+                        success_rate: 96.0,
+                        total_processing_time: 45.2,
+                        average_processing_time: 1.81,
+                        performance_grade: "A"
+                    },
+                    OptimizerAgent: {
+                        call_count: 18,
+                        success_count: 17,
+                        error_count: 1,
+                        success_rate: 94.44,
+                        total_processing_time: 32.1,
+                        average_processing_time: 1.78,
+                        performance_grade: "A"
+                    },
+                    ProgressAgent: {
+                        call_count: 42,
+                        success_count: 41,
+                        error_count: 1,
+                        success_rate: 97.62,
+                        total_processing_time: 68.5,
+                        average_processing_time: 1.63,
+                        performance_grade: "A+"
+                    },
+                    ResourceAgent: {
+                        call_count: 15,
+                        success_count: 15,
+                        error_count: 0,
+                        success_rate: 100.0,
+                        total_processing_time: 25.3,
+                        average_processing_time: 1.69,
+                        performance_grade: "A+"
+                    },
+                    MotivationAgent: {
+                        call_count: 30,
+                        success_count: 29,
+                        error_count: 1,
+                        success_rate: 96.67,
+                        total_processing_time: 18.7,
+                        average_processing_time: 0.62,
+                        performance_grade: "A"
+                    },
+                    EvaluatorAgent: {
+                        call_count: 12,
+                        success_count: 11,
+                        error_count: 1,
+                        success_rate: 91.67,
+                        total_processing_time: 22.4,
+                        average_processing_time: 1.87,
+                        performance_grade: "A"
+                    }
+                },
+                recent_traces: [
+                    {
+                        agent_name: "PlannerAgent",
+                        status: "success",
+                        timestamp: Date.now() / 1000 - 300
+                    },
+                    {
+                        agent_name: "ProgressAgent", 
+                        status: "success",
+                        timestamp: Date.now() / 1000 - 240
+                    },
+                    {
+                        agent_name: "MotivationAgent",
+                        status: "success", 
+                        timestamp: Date.now() / 1000 - 180
+                    },
+                    {
+                        agent_name: "OptimizerAgent",
+                        status: "success",
+                        timestamp: Date.now() / 1000 - 120
+                    },
+                    {
+                        agent_name: "EvaluatorAgent",
+                        status: "success",
+                        timestamp: Date.now() / 1000 - 60
+                    }
+                ]
+            };
+        }
+
+        // Test connection on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            testBackendConnection();
+            
+            // Auto-fill some demo data for testing
+            document.getElementById('user-id').value = 'demo_user_001';
+            document.getElementById('project-name').value = 'Learn Python for Data Science';
+        });
+    </script>
+</body>
+</html>
